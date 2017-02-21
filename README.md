@@ -1,2 +1,2 @@
 # JavaAdvanced
-2017
+IT Discovery 2017
