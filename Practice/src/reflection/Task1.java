@@ -17,7 +17,22 @@ import java.util.stream.Collectors;
  */
 public class Task1 {
 
-	public static List<Method> findMethods(Class<?> clazz1, Class<?> clazz2) {
+	public static void main(String[] args) {
+		// print methods as " name - parameter types - return type "
+		findCommonMethods(ArrayList.class, HashSet.class).stream()
+				.forEach(x -> System.out.println(x.getName() + " - "
+						+ Arrays.toString(x.getParameterTypes()) + " - " + x.getReturnType()));
+
+	}
+
+	/** find all methods in two classes(search all hierarchy) with
+	 * the same name, parameter types and return types
+	 *
+	 * @param clazz1
+	 * @param clazz2
+	 * @return list of common methods for two classes
+	 */
+	public static List<Method> findCommonMethods(Class<?> clazz1, Class<?> clazz2) {
 
 		List<Method> methodsInClass1 = findAllMethods(clazz1);
 		List<Method> methodsInClass2 = findAllMethods(clazz2);
@@ -40,18 +55,28 @@ public class Task1 {
 		if (clazz.getSuperclass() != null) {
 
 			methods.addAll(findAllMethods(clazz.getSuperclass()));
-			/* TODO remove duplicates */
+			
+			// remove duplicates(same name, parameter types, return types)
+			List<String> signatures = new ArrayList<>();
+			List<Method> uniqueMethods = new ArrayList<>();
+
+			for (Method m : methods) {
+				String signature = makeMethodSignature(m);
+				if (!signatures.contains(signature)) {
+					signatures.add(signature);
+					uniqueMethods.add(m);
+				}
+			}
+			methods = uniqueMethods;
 		}
 
 		return methods;
 	}
 
-	public static void main(String[] args) {
-		// print methods as " name - parameter types - return type "
-		findMethods(ArrayList.class, HashSet.class).stream()
-				.forEach(x -> System.out.println(x.getName() + " - "
-						+ Arrays.toString(x.getParameterTypes()) + " - " + x.getReturnType()));
+	private static String makeMethodSignature(Method method) {
 
+		return method.getName() + Arrays.toString(method.getParameterTypes())
+				+ method.getReturnType();
 	}
 
 }
